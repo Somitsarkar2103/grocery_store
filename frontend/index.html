@@ -23,7 +23,7 @@
     <div class="container announcement-content">
       <span class="announcement-tag">Special Offer</span>
       <p class="announcement-text">
-        Use coupon code <strong class="coupon-highlight" id="topCouponCode" title="Click to copy code">FRESH20</strong> for 20% OFF! Free express delivery on orders over $35 🚚
+        Use coupon code <strong class="coupon-highlight" id="topCouponCode" title="Click to copy code">FRESH20</strong> for 20% OFF! Free express delivery on orders over ₹499 🚚
       </p>
       <div class="announcement-actions">
         <span class="delivery-time-badge">⚡ 15-30 Min Delivery</span>
@@ -127,7 +127,7 @@
           </div>
           <div class="cart-total-info">
             <span class="cart-label">My Cart</span>
-            <span class="cart-amount" id="cartHeaderTotal">$0.00</span>
+            <span class="cart-amount" id="cartHeaderTotal">₹0.00</span>
           </div>
         </button>
 
@@ -173,7 +173,7 @@
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <strong>$35+</strong>
+            <strong>₹499+</strong>
             <span>Free Delivery</span>
           </div>
         </div>
@@ -186,7 +186,7 @@
             <div class="floating-icon">🥑</div>
             <div>
               <strong>Hass Avocados</strong>
-              <small>Freshly picked • $4.49</small>
+              <small>Freshly picked • ₹180.00</small>
             </div>
           </div>
           <div class="hero-floating-card floating-card-2">
@@ -277,12 +277,12 @@
           <div class="filter-group">
             <div class="price-header">
               <h4 class="filter-title">Max Price</h4>
-              <span class="price-value" id="priceDisplay">$20.00</span>
+              <span class="price-value" id="priceDisplay">₹1,000.00</span>
             </div>
-            <input type="range" id="priceRange" min="1" max="25" step="0.5" value="25" class="range-slider">
+            <input type="range" id="priceRange" min="20" max="1000" step="10" value="1000" class="range-slider">
             <div class="price-range-labels">
-              <span>$1.00</span>
-              <span>$25.00</span>
+              <span>₹20.00</span>
+              <span>₹1,000.00</span>
             </div>
           </div>
 
@@ -383,7 +383,7 @@
     <!-- Free Delivery Progress Bar -->
     <div class="delivery-progress-container" id="deliveryProgressContainer">
       <div class="delivery-progress-text" id="deliveryProgressText">
-        Add <strong>$35.00</strong> more to qualify for <strong>Free Delivery!</strong>
+        Add <strong>₹499.00</strong> more to qualify for <strong>Free Delivery!</strong>
       </div>
       <div class="progress-track">
         <div class="progress-bar" id="deliveryProgressBar" style="width: 0%;"></div>
@@ -419,31 +419,31 @@
       <div class="cart-summary-table">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span id="summarySubtotal">$0.00</span>
+          <span id="summarySubtotal">₹0.00</span>
         </div>
         <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
           <span>Coupon Discount (<span id="discountCodeLabel"></span>)</span>
-          <span class="discount-val" id="summaryDiscount">-$0.00</span>
+          <span class="discount-val" id="summaryDiscount">-₹0.00</span>
         </div>
         <div class="summary-row">
           <span>Delivery Fee</span>
-          <span id="summaryDeliveryFee">$4.99</span>
+          <span id="summaryDeliveryFee">₹49.00</span>
         </div>
         <div class="summary-row">
           <span>Estimated Sales Tax (5%)</span>
-          <span id="summaryTax">$0.00</span>
+          <span id="summaryTax">₹0.00</span>
         </div>
         <div class="summary-divider"></div>
         <div class="summary-row total-row">
           <span>Total</span>
-          <span class="summary-total-price" id="summaryTotal">$0.00</span>
+          <span class="summary-total-price" id="summaryTotal">₹0.00</span>
         </div>
       </div>
 
       <!-- Checkout CTA Button -->
       <button class="btn btn-primary btn-block btn-lg checkout-cta-btn" id="proceedToCheckoutBtn">
         <span>Proceed to Checkout</span>
-        <span class="checkout-total-pill" id="checkoutBtnTotal">$0.00</span>
+        <span class="checkout-total-pill" id="checkoutBtnTotal">₹0.00</span>
       </button>
 
       <div class="cart-guarantee-note">
@@ -547,23 +547,23 @@
           <div class="checkout-review-summary">
             <div class="review-row">
               <span>Items Total (<span id="modalItemsCount">0</span> items):</span>
-              <span id="modalSubtotal">$0.00</span>
+              <span id="modalSubtotal">₹0.00</span>
             </div>
             <div class="review-row discount-row" id="modalDiscountRow" style="display: none;">
               <span>Discount:</span>
-              <span id="modalDiscount">-$0.00</span>
+              <span id="modalDiscount">-₹0.00</span>
             </div>
             <div class="review-row">
               <span>Delivery Fee:</span>
-              <span id="modalDelivery">$0.00</span>
+              <span id="modalDelivery">₹0.00</span>
             </div>
             <div class="review-row">
               <span>Taxes (5%):</span>
-              <span id="modalTax">$0.00</span>
+              <span id="modalTax">₹0.00</span>
             </div>
             <div class="review-row review-grand-total">
               <strong>Order Grand Total:</strong>
-              <strong id="modalTotal">$0.00</strong>
+              <strong id="modalTotal">₹0.00</strong>
             </div>
           </div>
 
@@ -669,8 +669,8 @@
           </div>
 
           <div class="qv-price-row">
-            <span class="qv-price" id="qvPrice">$3.99</span>
-            <span class="qv-original-price" id="qvOriginalPrice">$4.99</span>
+            <span class="qv-price" id="qvPrice">₹120.00</span>
+            <span class="qv-original-price" id="qvOriginalPrice">₹150.00</span>
             <span class="qv-unit" id="qvUnit">/ 1 kg</span>
             <span class="qv-discount-pill" id="qvDiscountPill">20% OFF</span>
           </div>
@@ -761,7 +761,7 @@
           <div class="stats-cards-grid">
             <div class="admin-stat-card">
               <span class="stat-card-title">Total Revenue</span>
-              <strong class="stat-card-val text-primary" id="adminStatRevenue">$0.00</strong>
+              <strong class="stat-card-val text-primary" id="adminStatRevenue">₹0.00</strong>
               <small class="stat-card-sub">Processed through checkout</small>
             </div>
             <div class="admin-stat-card">
@@ -776,7 +776,7 @@
             </div>
             <div class="admin-stat-card">
               <span class="stat-card-title">Average Order Value</span>
-              <strong class="stat-card-val text-accent" id="adminStatAOV">$0.00</strong>
+              <strong class="stat-card-val text-accent" id="adminStatAOV">₹0.00</strong>
               <small class="stat-card-sub">Basket average</small>
             </div>
           </div>
@@ -873,12 +873,12 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="newProdPrice">Price ($) *</label>
-                <input type="number" id="newProdPrice" step="0.01" min="0.1" required placeholder="4.99">
+                <label for="newProdPrice">Price (₹) *</label>
+                <input type="number" id="newProdPrice" step="1" min="1" required placeholder="60">
               </div>
               <div class="form-group">
-                <label for="newProdOriginalPrice">Original Price ($)</label>
-                <input type="number" id="newProdOriginalPrice" step="0.01" min="0.1" placeholder="5.99">
+                <label for="newProdOriginalPrice">Original Price (₹)</label>
+                <input type="number" id="newProdOriginalPrice" step="1" min="1" placeholder="75">
               </div>
               <div class="form-group">
                 <label for="newProdUnit">Unit / Packaging *</label>

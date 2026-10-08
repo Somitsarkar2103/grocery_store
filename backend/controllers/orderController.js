@@ -63,8 +63,8 @@ const createOrder = async (req, res) => {
 
     subtotal = parseFloat(subtotal.toFixed(2));
 
-    // Calculate delivery fee: Free delivery over $35, else $4.99
-    const delivery_fee = subtotal >= 35 ? 0 : 4.99;
+    // Calculate delivery fee: Free delivery over ₹499, else ₹49.00
+    const delivery_fee = subtotal >= 499 ? 0 : 49.00;
 
     // Apply coupon discount if provided
     let discount = 0;

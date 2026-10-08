@@ -69,7 +69,7 @@ const validateCoupon = async (req, res) => {
     if (coupon.min_order_value && orderSubtotal < coupon.min_order_value) {
       return res.status(400).json({
         success: false,
-        error: `Coupon "${normalizedCode}" requires a minimum order of $${coupon.min_order_value.toFixed(2)} (Current subtotal: $${orderSubtotal.toFixed(2)})`
+        error: `Coupon "${normalizedCode}" requires a minimum order of ₹${coupon.min_order_value.toFixed(2)} (Current subtotal: ₹${orderSubtotal.toFixed(2)})`
       });
     }
 

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const App = {
     currentCategory: 'all',
     searchTerm: '',
-    maxPrice: 25,
+    maxPrice: 1000,
     isOrganicOnly: false,
     isInStockOnly: true,
     currentSort: 'featured',
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (priceRange && priceDisplay) {
         priceRange.addEventListener('input', (e) => {
           const val = parseFloat(e.target.value);
-          priceDisplay.textContent = `$${val.toFixed(2)}`;
+          priceDisplay.textContent = `₹${val.toFixed(2)}`;
           this.maxPrice = val;
         });
         priceRange.addEventListener('change', () => this.loadProducts());
@@ -304,13 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const resetAll = () => {
         this.currentCategory = 'all';
         this.searchTerm = '';
-        this.maxPrice = 25;
+        this.maxPrice = 1000;
         this.isOrganicOnly = false;
         this.isInStockOnly = false;
         this.currentSort = 'featured';
 
-        if (priceRange) priceRange.value = 25;
-        if (priceDisplay) priceDisplay.textContent = '$25.00';
+        if (priceRange) priceRange.value = 1000;
+        if (priceDisplay) priceDisplay.textContent = '₹1,000.00';
         if (organicFilter) organicFilter.checked = false;
         if (inStockFilter) inStockFilter.checked = false;
         if (sortSelect) sortSelect.value = 'featured';
@@ -356,8 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (this.searchTerm) {
         tags.push({ label: `Search: "${this.searchTerm}"`, type: 'search' });
       }
-      if (this.maxPrice < 25) {
-        tags.push({ label: `Under $${this.maxPrice.toFixed(2)}`, type: 'price' });
+      if (this.maxPrice < 1000) {
+        tags.push({ label: `Under ₹${this.maxPrice.toFixed(2)}`, type: 'price' });
       }
       if (this.isOrganicOnly) {
         tags.push({ label: 'Organic Only', type: 'organic' });
@@ -381,9 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.loadProducts();
           }
           if (t.type === 'price') {
-            this.maxPrice = 25;
-            document.getElementById('priceRange').value = 25;
-            document.getElementById('priceDisplay').textContent = '$25.00';
+            this.maxPrice = 1000;
+            document.getElementById('priceRange').value = 1000;
+            document.getElementById('priceDisplay').textContent = '₹1,000.00';
             this.loadProducts();
           }
           if (t.type === 'organic') {

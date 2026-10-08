@@ -119,9 +119,9 @@ const CartState = {
     const subtotal = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const itemCount = this.items.reduce((sum, item) => sum + item.quantity, 0);
 
-    const freeShippingThreshold = 35.00;
+    const freeShippingThreshold = 499.00;
     const isFreeShipping = subtotal >= freeShippingThreshold || (this.coupon && this.coupon.code === 'FREESHIP');
-    const deliveryFee = subtotal === 0 ? 0 : (isFreeShipping ? 0 : 4.99);
+    const deliveryFee = subtotal === 0 ? 0 : (isFreeShipping ? 0 : 49.00);
     const freeShippingRemaining = Math.max(0, freeShippingThreshold - subtotal);
     const freeShippingPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
 

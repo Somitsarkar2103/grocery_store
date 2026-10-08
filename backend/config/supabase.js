@@ -15,41 +15,41 @@ const fallbackDb = {
       order_number: 'ORD-98214',
       customer_name: 'Jessica Parker',
       customer_email: 'jessica@example.com',
-      customer_phone: '+1 (555) 234-5678',
-      shipping_address: '742 Evergreen Terrace, Apt 4B',
-      delivery_city: 'New York',
-      delivery_zip: '10001',
+      customer_phone: '+91 98765 43210',
+      shipping_address: '742 Green Park, Apt 4B',
+      delivery_city: 'New Delhi',
+      delivery_zip: '110016',
       delivery_slot: 'Standard Delivery (30-45 mins)',
-      payment_method: 'Card',
+      payment_method: 'UPI',
       payment_status: 'Paid',
-      subtotal: 28.36,
+      subtotal: 885.00,
       delivery_fee: 0,
-      discount: 5.67,
-      tax: 1.82,
-      total: 24.51,
+      discount: 177.00,
+      tax: 35.40,
+      total: 743.40,
       status: 'Out for Delivery',
       notes: 'Please leave at the door',
       items: [
         {
           product_id: 'p1010001-0000-0000-0000-000000000001',
           product_name: 'Organic Honeycrisp Apples',
-          price: 3.99,
+          price: 120.00,
           quantity: 2,
-          total_price: 7.98
+          total_price: 240.00
         },
         {
           product_id: 'p2020002-0000-0000-0000-000000000002',
           product_name: 'Pasture-Raised Grade A Large Eggs',
-          price: 5.99,
+          price: 95.00,
           quantity: 1,
-          total_price: 5.99
+          total_price: 95.00
         },
         {
           product_id: 'p5050001-0000-0000-0000-000000000001',
           product_name: 'Extra Virgin Cold-Pressed Olive Oil',
-          price: 14.99,
+          price: 550.00,
           quantity: 1,
-          total_price: 14.99
+          total_price: 550.00
         }
       ],
       created_at: new Date(Date.now() - 3600000).toISOString()

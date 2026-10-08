@@ -156,11 +156,11 @@ Connecting to live Supabase takes less than 3 minutes:
    - Fresh Produce 🍎, Dairy & Eggs 🥛, Artisan Bakery 🥖, Juices & Beverages 🧃, Organic Pantry 🌾, Meat & Seafood 🥩.
 2. **Instant Search & Interactive Filtering:**
    - Debounced search bar across products and descriptions.
-   - Price range slider ($1 - $25).
+   - Price range slider (₹20 - ₹1,000).
    - "Organic Only 🌱" and "In Stock Only 📦" toggle filters.
    - Sort by *Featured*, *Price: Low to High*, *Price: High to Low*, or *Highest Rated*.
 3. **Slide-over Shopping Cart:**
-   - Free delivery progress meter (qualify with $35+ cart).
+   - Free delivery progress meter (qualify with ₹499+ cart).
    - Promo coupon validation (`FRESH20` for 20% off).
    - Real-time tax and delivery calculation.
 4. **End-to-End Checkout & Live Tracking:**

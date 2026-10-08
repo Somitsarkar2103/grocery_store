@@ -26,7 +26,7 @@ const UI = {
 
   // Currency Formatter
   formatPrice(num) {
-    return `$${parseFloat(num || 0).toFixed(2)}`;
+    return `₹${parseFloat(num || 0).toFixed(2)}`;
   },
 
   // Dark / Light Theme Toggle
@@ -211,7 +211,7 @@ const UI = {
       if (calc.isFreeShipping) {
         progressText.innerHTML = `🎉 <strong>Congratulations!</strong> You get <strong>FREE Express Delivery!</strong>`;
       } else {
-        progressText.innerHTML = `Add <strong>$${calc.freeShippingRemaining.toFixed(2)}</strong> more for <strong>FREE Delivery!</strong>`;
+        progressText.innerHTML = `Add <strong>₹${calc.freeShippingRemaining.toFixed(2)}</strong> more for <strong>FREE Delivery!</strong>`;
       }
     }
 
