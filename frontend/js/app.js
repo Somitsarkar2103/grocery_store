@@ -15,8 +15,23 @@ document.addEventListener('DOMContentLoaded', () => {
     async init() {
       UI.initTheme();
       CartState.subscribe(calc => UI.updateCartDrawer(calc));
-      CartState.subscribeWishlist(wishlist => UI.updateWishlistDrawer(wishlist));
+      CartState.subscribeWishlist(wishlist => {
+        UI.updateWishlistDrawer(wishlist);
+        UI.syncWishlistButtons(wishlist);
+      });
       Admin.init();
+
+      // Role and Auth UI Setup
+      if (typeof Auth !== 'undefined') {
+        Auth.renderHeader('headerAuthContainer');
+        const adminBtn = document.getElementById('adminPortalBtn');
+        if (adminBtn) {
+          // Strict Role Separation: Normal customers cannot access admin portal!
+          if (Auth.isAuthenticated() && !Auth.isAdmin()) {
+            adminBtn.style.display = 'none';
+          }
+        }
+      }
 
       this.bindHeaderActions();
       this.bindFilterActions();
@@ -25,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       this.bindQuickViewActions();
       this.bindWishlistActions();
       this.bindLocationActions();
+      this.bindCustomerAccountActions();
 
       await this.loadCategories();
       await this.loadProducts();
@@ -127,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (grid) {
           UI.renderProducts(this.allProducts, grid);
           this.bindProductCardEvents(grid);
+          UI.syncWishlistButtons(CartState.wishlist);
         }
 
         this.updateActiveTags();
@@ -567,13 +584,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modalTax').textContent = UI.formatPrice(calc.tax);
         document.getElementById('modalTotal').textContent = UI.formatPrice(calc.total);
 
-        const discountRow = document.getElementById('modalDiscountRow');
-        const discountEl = document.getElementById('modalDiscount');
-        if (calc.discount > 0) {
-          discountRow.style.display = 'flex';
-          discountEl.textContent = `-${UI.formatPrice(calc.discount)}`;
-        } else {
-          discountRow.style.display = 'none';
+        if (discountRow) {
+          if (calc.discount > 0) {
+            discountRow.style.display = 'flex';
+            if (discountEl) discountEl.textContent = `-${UI.formatPrice(calc.discount)}`;
+          } else {
+            discountRow.style.display = 'none';
+          }
+        }
+
+        // Auto-fill logged-in customer info if available
+        if (typeof Auth !== 'undefined' && Auth.isAuthenticated()) {
+          const user = Auth.getUser();
+          if (user) {
+            const nameInp = document.getElementById('custName');
+            const emailInp = document.getElementById('custEmail');
+            const phoneInp = document.getElementById('custPhone');
+            if (nameInp && !nameInp.value) nameInp.value = user.name || '';
+            if (emailInp && !emailInp.value) emailInp.value = user.email || '';
+            if (phoneInp && !phoneInp.value) phoneInp.value = user.phone || '';
+          }
         }
 
         if (checkoutModal) checkoutModal.classList.add('active');
@@ -761,10 +791,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (btn.dataset.action === 'wishlist-add-cart') {
             CartState.addItem(item, 1);
-            CartState.toggleWishlist(item);
+            CartState.removeFromWishlist(item.id);
             UI.showToast(`Moved ${item.name} to basket!`, 'success', '🛒');
           } else if (btn.dataset.action === 'wishlist-remove') {
-            CartState.toggleWishlist(item);
+            CartState.removeFromWishlist(item.id);
             UI.showToast(`Removed from wishlist`, 'info', '🤍');
           }
         });
@@ -815,6 +845,127 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
+    },
+
+    // --------------------------------------------------------------------------
+    // 10. CUSTOMER ACCOUNT MODALS (ORDERS & PROFILE)
+    // --------------------------------------------------------------------------
+    bindCustomerAccountActions() {
+      const ordersModal = document.getElementById('customerOrdersModalBackdrop');
+      const closeOrders = document.getElementById('closeCustOrdersModal');
+      const ordersListContainer = document.getElementById('customerOrdersListContainer');
+      const ordersEmailLabel = document.getElementById('custOrdersEmailLabel');
+
+      const openCustomerOrders = async () => {
+        if (!ordersModal) return;
+        ordersModal.style.display = 'flex';
+
+        const user = typeof Auth !== 'undefined' ? Auth.getUser() : null;
+        const email = user ? user.email : '';
+        if (ordersEmailLabel) {
+          ordersEmailLabel.textContent = email ? `Orders for ${email}` : 'Store Orders';
+        }
+
+        try {
+          if (ordersListContainer) {
+            ordersListContainer.innerHTML = '<p class="text-muted" style="text-align: center; padding: 20px;">Fetching your orders...</p>';
+          }
+          const res = await API.getOrders(email);
+          const orders = res.data || [];
+
+          if (!ordersListContainer) return;
+          if (orders.length === 0) {
+            ordersListContainer.innerHTML = `
+              <div style="text-align: center; padding: 30px;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📦</div>
+                <h4>No orders placed yet</h4>
+                <p class="text-muted">Once you place an order, your grocery deliveries and tracking will appear here.</p>
+              </div>
+            `;
+            return;
+          }
+
+          ordersListContainer.innerHTML = '';
+          orders.forEach(order => {
+            const orderCard = document.createElement('div');
+            orderCard.style.cssText = 'background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 14px;';
+            const itemsSummary = (order.items || []).map(i => `${i.product_name || i.name} (x${i.quantity})`).join(', ') || 'Grocery Basket';
+            const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString() : 'Recent';
+            const statusClass = (order.status || 'confirmed').toLowerCase().replace(/\s+/g, '-');
+
+            orderCard.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <div>
+                  <strong style="font-size: 1rem; color: var(--text-main);">${order.order_number}</strong>
+                  <span class="text-muted" style="font-size: 0.78rem; display: block;">Placed on ${dateStr}</span>
+                </div>
+                <span class="status-badge ${statusClass}">${order.status}</span>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+                <strong>Items:</strong> ${itemsSummary}
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 8px; font-size: 0.88rem;">
+                <span class="text-muted">Delivery: ${order.delivery_slot || 'Standard'}</span>
+                <strong style="color: var(--primary); font-size: 1.05rem;">₹${parseFloat(order.total).toFixed(2)}</strong>
+              </div>
+            `;
+            ordersListContainer.appendChild(orderCard);
+          });
+        } catch (err) {
+          if (ordersListContainer) {
+            ordersListContainer.innerHTML = `<p class="text-danger" style="text-align: center; padding: 20px;">Could not load orders: ${err.message}</p>`;
+          }
+        }
+      };
+
+      if (closeOrders) closeOrders.addEventListener('click', () => {
+        if (ordersModal) ordersModal.style.display = 'none';
+      });
+      if (ordersModal) ordersModal.addEventListener('click', (e) => {
+        if (e.target === ordersModal) ordersModal.style.display = 'none';
+      });
+      window.addEventListener('open-customer-orders-modal', openCustomerOrders);
+
+      // Customer Profile Modal
+      const profileModal = document.getElementById('customerProfileModalBackdrop');
+      const closeProfile = document.getElementById('closeCustProfileModal');
+      const closeProfileBtn = document.getElementById('closeProfileBtn');
+      const logoutProfileBtn = document.getElementById('custProfileLogoutBtn');
+
+      const openProfileModal = () => {
+        if (!profileModal) return;
+        const user = typeof Auth !== 'undefined' ? Auth.getUser() : null;
+        if (!user) {
+          window.location.href = '/user-login';
+          return;
+        }
+
+        const avatar = document.getElementById('custProfileAvatar');
+        const name = document.getElementById('custProfileName');
+        const email = document.getElementById('custProfileEmail');
+        const phone = document.getElementById('custProfilePhone');
+
+        if (avatar) avatar.textContent = (user.name || 'U').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        if (name) name.textContent = user.name || 'Customer';
+        if (email) email.textContent = user.email || '';
+        if (phone) phone.textContent = user.phone || 'Not specified';
+
+        profileModal.style.display = 'flex';
+      };
+
+      if (closeProfile) closeProfile.addEventListener('click', () => {
+        if (profileModal) profileModal.style.display = 'none';
+      });
+      if (closeProfileBtn) closeProfileBtn.addEventListener('click', () => {
+        if (profileModal) profileModal.style.display = 'none';
+      });
+      if (profileModal) profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) profileModal.style.display = 'none';
+      });
+      if (logoutProfileBtn) logoutProfileBtn.addEventListener('click', () => {
+        if (typeof Auth !== 'undefined') Auth.logout('/');
+      });
+      window.addEventListener('open-customer-profile-modal', openProfileModal);
     }
   };
 

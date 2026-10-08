@@ -228,11 +228,11 @@ ON CONFLICT (id) DO UPDATE SET
 -- 3. INSERT COUPONS (IN INR ₹)
 INSERT INTO coupons (code, discount_percent, discount_amount, min_order_value, is_active)
 VALUES
-    ('FRESH20', 20, 0, 399.00, true),
+    ('FRESH20', 20, 0, 299.00, true),
     ('ORGANIC15', 15, 0, 499.00, true),
     ('SAVE10', 10, 0, 299.00, true),
     ('FREESHIP', 0, 49.00, 499.00, true)
-ON CONFLICT (code) DO NOTHING;
+ON CONFLICT (code) DO UPDATE SET min_order_value = EXCLUDED.min_order_value;
 
 -- 4. INSERT SAMPLE REVIEWS
 INSERT INTO reviews (product_id, user_name, rating, comment)
@@ -243,3 +243,14 @@ VALUES
     ('p5050001-0000-0000-0000-000000000001', 'Ananya Iyer', 5, 'Authentic cold pressed olive oil. Notes of grass and pepper. Outstanding value.'),
     ('p5050004-0000-0000-0000-000000000004', 'Vikram Singh', 5, 'The Basmati rice grains are super long and fragrant. Highly recommended!')
 ON CONFLICT DO NOTHING;
+
+-- 5. INSERT INITIAL SEED USERS (Role: admin and user)
+-- Admin credentials: admin@freshcart.com / admin123
+-- Customer credentials: user@freshcart.com / user123
+INSERT INTO users (id, name, email, password_hash, salt, phone, role)
+VALUES
+    ('usr-admin-001', 'FreshCart Admin', 'admin@freshcart.com', '93c410e1deaaffa6dcbef97ef361b542198970eb3a8314828098d508830556f773e66efe0e02f11ae9a4690e8366c96cff584e78c63539e5ea4c702fc8640cc1', 'admin_salt_2026', '+91 98765 00000', 'admin'),
+    ('usr-cust-001', 'Jessica Parker', 'jessica@example.com', '66a0ee35fc71bf4a9dac6424a32893ec230950c9ea47c3ecc21a1c183750c85bc13806b7c975b82c77883e34271bd2e70e92b11af861ebb2f1af05284698b7f2', 'user_salt_2026', '+91 98765 43210', 'user'),
+    ('usr-cust-002', 'Aarav Sharma', 'user@freshcart.com', '66a0ee35fc71bf4a9dac6424a32893ec230950c9ea47c3ecc21a1c183750c85bc13806b7c975b82c77883e34271bd2e70e92b11af861ebb2f1af05284698b7f2', 'user_salt_2026', '+91 98765 11223', 'user')
+ON CONFLICT (id) DO NOTHING;
+

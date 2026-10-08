@@ -12,6 +12,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,10 +45,28 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/auth', authRoutes);
 
 // Serve Frontend Static Assets
 const frontendPath = path.resolve(__dirname, '../frontend');
 app.use(express.static(frontendPath));
+
+// Clean page route mappings
+app.get('/user-login', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'user-login.html'));
+});
+
+app.get('/admin-login', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'admin-login.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'admin.html'));
+});
+
+app.get(['/products', '/cart', '/checkout', '/orders', '/store'], (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 // Fallback to frontend index.html for client-side navigation
 app.get('*', (req, res, next) => {

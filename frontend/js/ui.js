@@ -324,6 +324,36 @@ const UI = {
     }
   },
 
+  // Synchronize heart button states on all rendered product cards
+  syncWishlistButtons(wishlist) {
+    const wishIds = new Set((wishlist || []).map(item => String(item.id)));
+    document.querySelectorAll('.product-card').forEach(card => {
+      const pid = String(card.dataset.id);
+      const isFav = wishIds.has(pid);
+      const btn = card.querySelector('[data-action="wishlist"]');
+      if (btn) {
+        btn.classList.toggle('active', isFav);
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('fill', isFav ? '#ef4444' : 'none');
+        btn.setAttribute('title', isFav ? 'Remove from wishlist' : 'Save to wishlist');
+      }
+    });
+
+    const qvModal = document.getElementById('quickViewBackdrop');
+    if (qvModal) {
+      const qvId = qvModal.dataset.id;
+      if (qvId) {
+        const isFav = wishIds.has(String(qvId));
+        const qvBtn = qvModal.querySelector('[data-action="wishlist"]');
+        if (qvBtn) {
+          qvBtn.classList.toggle('active', isFav);
+          const svg = qvBtn.querySelector('svg');
+          if (svg) svg.setAttribute('fill', isFav ? '#ef4444' : 'none');
+        }
+      }
+    }
+  },
+
   // Open Quick View Modal
   openQuickView(product) {
     const modal = document.getElementById('quickViewBackdrop');

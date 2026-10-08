@@ -7,16 +7,25 @@ const getStats = async (req, res) => {
 
     if (supabase) {
       try {
-        const [ordersRes, prodsRes] = await Promise.all([
+        const [ordersRes, prodsRes, usersRes, allProdsRes] = await Promise.all([
           supabase.from('orders').select('total, status, created_at'),
-          supabase.from('products').select('id', { count: 'exact', head: true })
+          supabase.from('products').select('id', { count: 'exact', head: true }),
+          supabase.from('users').select('id', { count: 'exact', head: true }),
+          supabase.from('products').select('stock')
         ]);
 
         if (!ordersRes.error && ordersRes.data) {
           const orders = ordersRes.data;
           const totalRevenue = orders.reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
           const totalOrders = orders.length;
-          const totalProducts = prodsRes.count || fallbackDb.products.length;
+          const totalProducts = prodsRes.count !== null ? prodsRes.count : fallbackDb.products.length;
+          const totalUsers = usersRes.count !== null ? usersRes.count : (fallbackDb.users ? fallbackDb.users.length : 3);
+
+          const pendingOrders = orders.filter(o => 
+            ['Order Confirmed', 'Confirmed', 'Pending', 'Preparing', 'Packed'].includes(o.status)
+          ).length;
+
+          const lowStockProducts = (allProdsRes.data || fallbackDb.products).filter(p => (p.stock || 0) <= 10).length;
 
           const statusCounts = orders.reduce((acc, o) => {
             acc[o.status] = (acc[o.status] || 0) + 1;
@@ -30,6 +39,9 @@ const getStats = async (req, res) => {
               totalRevenue: parseFloat(totalRevenue.toFixed(2)),
               totalOrders,
               totalProducts,
+              totalUsers,
+              pendingOrders,
+              lowStockProducts,
               averageOrderValue: totalOrders > 0 ? parseFloat((totalRevenue / totalOrders).toFixed(2)) : 0,
               statusCounts
             }
@@ -41,10 +53,17 @@ const getStats = async (req, res) => {
     }
 
     // Fallback metrics
-    const orders = fallbackDb.orders;
+    const orders = fallbackDb.orders || [];
     const totalRevenue = orders.reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
     const totalOrders = orders.length;
-    const totalProducts = fallbackDb.products.length;
+    const totalProducts = (fallbackDb.products || []).length;
+    const totalUsers = (fallbackDb.users || []).length;
+
+    const pendingOrders = orders.filter(o => 
+      ['Order Confirmed', 'Confirmed', 'Pending', 'Preparing', 'Packed'].includes(o.status)
+    ).length;
+
+    const lowStockProducts = (fallbackDb.products || []).filter(p => (p.stock || 0) <= 10).length;
 
     const statusCounts = orders.reduce((acc, o) => {
       acc[o.status] = (acc[o.status] || 0) + 1;
@@ -58,6 +77,9 @@ const getStats = async (req, res) => {
         totalRevenue: parseFloat(totalRevenue.toFixed(2)),
         totalOrders,
         totalProducts,
+        totalUsers,
+        pendingOrders,
+        lowStockProducts,
         averageOrderValue: totalOrders > 0 ? parseFloat((totalRevenue / totalOrders).toFixed(2)) : 0,
         statusCounts
       }

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Login | FreshCart Online Grocery</title>
+  <meta name="description" content="Sign in to your FreshCart customer account to order farm-fresh groceries, track your orders, and save your favorite items.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2226%22>🛒</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>
+    .auth-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
+                  var(--bg-body);
+    }
+    .auth-header-bar {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .auth-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+    .auth-card-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .auth-card-header .brand-logo {
+      display: inline-flex;
+      margin-bottom: 16px;
+    }
+    .auth-card-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .auth-card-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-surface-elevated);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+    }
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .auth-tab-btn.active {
+      background: var(--bg-surface);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .auth-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .auth-input-group label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-input-wrap input {
+      width: 100%;
+      padding-right: 44px;
+    }
+    .toggle-password-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+    .toggle-password-btn:hover {
+      color: var(--primary);
+    }
+    .auth-extra-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .auth-extra-row a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-extra-row a:hover {
+      text-decoration: underline;
+    }
+    .auth-submit-btn {
+      margin-top: 6px;
+      width: 100%;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .demo-creds-banner {
+      margin-top: 24px;
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px dashed rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .demo-creds-title {
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .autofill-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .auth-card-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .admin-switch-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-main);
+      font-weight: 600;
+      text-decoration: none;
+      padding: 10px 16px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .admin-switch-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .auth-alert {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-alert.error {
+      display: block;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    .auth-alert.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-page-wrapper">
+    
+    <!-- Top Bar -->
+    <header class="auth-header-bar">
+      <a href="/" class="brand-logo" title="Back to FreshCart Home">
+        <div class="logo-icon-wrapper">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Fresh<span>Cart</span></span>
+          <span class="brand-subtitle">Organic Groceries</span>
+        </div>
+      </a>
+
+      <a href="/" class="btn btn-sm btn-outline">
+        <span>← Return to Grocery Store</span>
+      </a>
+    </header>
+
+    <!-- Center Card -->
+    <main class="auth-container">
+      <div class="auth-card">
+        
+        <div class="auth-card-header">
+          <h1 class="auth-card-title" id="pageMainHeading">User Login</h1>
+          <p class="auth-card-subtitle" id="pageSubHeading">Access your grocery basket, saved wishlist & fast delivery</p>
+        </div>
+
+        <!-- Alert Notification -->
+        <div class="auth-alert" id="authAlert"></div>
+
+        <!-- Tab Switcher: Login / Sign Up -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="tabLoginBtn">Sign In</button>
+          <button type="button" class="auth-tab-btn" id="tabSignUpBtn">Create Account</button>
+        </div>
+
+        <!-- 1. LOGIN FORM -->
+        <form class="auth-form" id="userLoginForm">
+          <div class="auth-input-group">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" required placeholder="name@example.com" autocomplete="email">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="loginPassword">Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+              <button type="button" class="toggle-password-btn" id="toggleLoginPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-extra-row">
+            <label class="custom-checkbox" style="font-size: 0.85rem;">
+              <input type="checkbox" id="rememberMe" checked>
+              <span class="checkbox-indicator"></span>
+              <span>Keep me signed in</span>
+            </label>
+            <a href="#" id="forgotPasswordLink">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="loginSubmitBtn">
+            <span>Sign In to FreshCart</span>
+          </button>
+        </form>
+
+        <!-- 2. SIGN UP FORM (Initially Hidden) -->
+        <form class="auth-form" id="userSignUpForm" style="display: none;">
+          <div class="auth-input-group">
+            <label for="regName">Full Name</label>
+            <input type="text" id="regName" required placeholder="e.g. Jessica Parker" autocomplete="name">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="regEmail">Email Address</label>
+            <input type="email" id="regEmail" required placeholder="name@example.com" autocomplete="email">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="regPhone">Phone Number (Optional)</label>
+            <input type="tel" id="regPhone" placeholder="+91 98765 43210" autocomplete="tel">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="regPassword">Create Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="regPassword" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+              <button type="button" class="toggle-password-btn" id="toggleRegPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="signUpSubmitBtn">
+            <span>Create Customer Account</span>
+          </button>
+        </form>
+
+        <!-- Demo Customer Credentials -->
+        <div class="demo-creds-banner">
+          <div class="demo-creds-title">
+            <span>Customer Demo Credentials</span>
+            <button type="button" class="autofill-btn" id="autofillCustBtn">Click to Autofill</button>
+          </div>
+          <div><strong>Email:</strong> user@freshcart.com</div>
+          <div><strong>Password:</strong> user123</div>
+        </div>
+
+        <!-- Footer Switch to Admin -->
+        <div class="auth-card-footer">
+          <div>
+            Need to manage products, inventory & orders?
+          </div>
+          <a href="/admin-login" class="admin-switch-btn" title="Open Admin Login">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Store Staff & Admin Login →</span>
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabLoginBtn = document.getElementById('tabLoginBtn');
+      const tabSignUpBtn = document.getElementById('tabSignUpBtn');
+      const loginForm = document.getElementById('userLoginForm');
+      const signUpForm = document.getElementById('userSignUpForm');
+      const heading = document.getElementById('pageMainHeading');
+      const subHeading = document.getElementById('pageSubHeading');
+      const authAlert = document.getElementById('authAlert');
+
+      // Check if already logged in as customer
+      if (Auth.isAuthenticated() && Auth.isCustomer()) {
+        showAlert('You are already signed in as ' + Auth.getUser().name + '. Redirecting...', 'success');
+        setTimeout(() => { window.location.href = '/'; }, 1000);
+      }
+
+      function showAlert(msg, type = 'error') {
+        authAlert.textContent = msg;
+        authAlert.className = `auth-alert ${type}`;
+        authAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function hideAlert() {
+        authAlert.style.display = 'none';
+        authAlert.textContent = '';
+      }
+
+      // Tab Switching
+      tabLoginBtn.addEventListener('click', () => {
+        tabLoginBtn.classList.add('active');
+        tabSignUpBtn.classList.remove('active');
+        loginForm.style.display = 'flex';
+        signUpForm.style.display = 'none';
+        heading.textContent = 'User Login';
+        subHeading.textContent = 'Access your grocery basket, saved wishlist & fast delivery';
+        hideAlert();
+      });
+
+      tabSignUpBtn.addEventListener('click', () => {
+        tabSignUpBtn.classList.add('active');
+        tabLoginBtn.classList.remove('active');
+        loginForm.style.display = 'none';
+        signUpForm.style.display = 'flex';
+        heading.textContent = 'Create Customer Account';
+        subHeading.textContent = 'Join FreshCart for farm-fresh organic food delivered in 15 minutes';
+        hideAlert();
+      });
+
+      // Show/Hide password toggles
+      const setupPasswordToggle = (btnId, inputId) => {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        if (btn && input) {
+          btn.addEventListener('click', () => {
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            btn.innerHTML = isPassword ? `
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            ` : `
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            `;
+          });
+        }
+      };
+
+      setupPasswordToggle('toggleLoginPassword', 'loginPassword');
+      setupPasswordToggle('toggleRegPassword', 'regPassword');
+
+      // Autofill demo customer
+      document.getElementById('autofillCustBtn').addEventListener('click', () => {
+        tabLoginBtn.click();
+        document.getElementById('loginEmail').value = 'user@freshcart.com';
+        document.getElementById('loginPassword').value = 'user123';
+        hideAlert();
+      });
+
+      // Forgot password hint
+      document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        if (email) {
+          showAlert(`Password recovery instructions sent to ${email} (Demo: password is "user123")`, 'success');
+        } else {
+          showAlert('Please enter your email address to receive reset instructions.', 'error');
+        }
+      });
+
+      // Handle Login
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+        const submitBtn = document.getElementById('loginSubmitBtn');
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Verifying credentials...</span>';
+
+        try {
+          const user = await Auth.login(email, password);
+          showAlert(`Welcome back, ${user.name}! Redirecting to FreshCart...`, 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 800);
+        } catch (err) {
+          showAlert(err.message || 'Invalid email or password. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Sign In to FreshCart</span>';
+        }
+      });
+
+      // Handle Sign Up
+      signUpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+        const submitBtn = document.getElementById('signUpSubmitBtn');
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const password = document.getElementById('regPassword').value;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Creating your account...</span>';
+
+        try {
+          const user = await Auth.register({ name, email, phone, password });
+          showAlert(`Account created successfully! Welcome, ${user.name}! Redirecting...`, 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 800);
+        } catch (err) {
+          showAlert(err.message || 'Registration failed. Please check your information.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Create Customer Account</span>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

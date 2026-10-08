@@ -9,6 +9,38 @@ const fallbackDb = {
   categories: JSON.parse(JSON.stringify(initialCategories)),
   products: JSON.parse(JSON.stringify(initialProducts)),
   coupons: JSON.parse(JSON.stringify(initialCoupons)),
+  users: [
+    {
+      id: 'usr-admin-001',
+      name: 'FreshCart Admin',
+      email: 'admin@freshcart.com',
+      phone: '+91 98765 00000',
+      role: 'admin',
+      password_hash: '93c410e1deaaffa6dcbef97ef361b542198970eb3a8314828098d508830556f773e66efe0e02f11ae9a4690e8366c96cff584e78c63539e5ea4c702fc8640cc1',
+      salt: 'admin_salt_2026',
+      created_at: new Date(Date.now() - 86400000 * 30).toISOString()
+    },
+    {
+      id: 'usr-cust-001',
+      name: 'Jessica Parker',
+      email: 'jessica@example.com',
+      phone: '+91 98765 43210',
+      role: 'user',
+      password_hash: '66a0ee35fc71bf4a9dac6424a32893ec230950c9ea47c3ecc21a1c183750c85bc13806b7c975b82c77883e34271bd2e70e92b11af861ebb2f1af05284698b7f2',
+      salt: 'user_salt_2026',
+      created_at: new Date(Date.now() - 86400000 * 10).toISOString()
+    },
+    {
+      id: 'usr-cust-002',
+      name: 'Aarav Sharma',
+      email: 'user@freshcart.com',
+      phone: '+91 98765 11223',
+      role: 'user',
+      password_hash: '66a0ee35fc71bf4a9dac6424a32893ec230950c9ea47c3ecc21a1c183750c85bc13806b7c975b82c77883e34271bd2e70e92b11af861ebb2f1af05284698b7f2',
+      salt: 'user_salt_2026',
+      created_at: new Date(Date.now() - 86400000 * 5).toISOString()
+    }
+  ],
   orders: [
     {
       id: 'ord-mock-001',

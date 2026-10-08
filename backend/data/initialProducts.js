@@ -601,7 +601,7 @@ const initialProducts = [
 ];
 
 const initialCoupons = [
-  { code: 'FRESH20', discount_percent: 20, discount_amount: 0, min_order_value: 399.00, is_active: true },
+  { code: 'FRESH20', discount_percent: 20, discount_amount: 0, min_order_value: 299.00, is_active: true },
   { code: 'ORGANIC15', discount_percent: 15, discount_amount: 0, min_order_value: 499.00, is_active: true },
   { code: 'SAVE10', discount_percent: 10, discount_amount: 0, min_order_value: 299.00, is_active: true },
   { code: 'FREESHIP', discount_percent: 0, discount_amount: 49.00, min_order_value: 499.00, is_active: true }

@@ -127,10 +127,12 @@ const CartState = {
 
     let discount = 0;
     if (this.coupon && subtotal > 0) {
-      if (this.coupon.discount_percent > 0) {
-        discount = (subtotal * this.coupon.discount_percent) / 100;
-      } else if (this.coupon.discount_amount > 0) {
-        discount = Math.min(subtotal, this.coupon.discount_amount);
+      if (!this.coupon.min_order_value || subtotal >= this.coupon.min_order_value) {
+        if (this.coupon.discount_percent > 0) {
+          discount = (subtotal * this.coupon.discount_percent) / 100;
+        } else if (this.coupon.discount_amount > 0) {
+          discount = Math.min(subtotal, this.coupon.discount_amount);
+        }
       }
     }
 
@@ -155,7 +157,7 @@ const CartState = {
 
   // Wishlist Methods
   toggleWishlist(product) {
-    const index = this.wishlist.findIndex(item => item.id === product.id);
+    const index = this.wishlist.findIndex(item => String(item.id) === String(product.id));
     let added = false;
     if (index > -1) {
       this.wishlist.splice(index, 1);
@@ -174,8 +176,13 @@ const CartState = {
     return added;
   },
 
+  removeFromWishlist(productId) {
+    this.wishlist = this.wishlist.filter(item => String(item.id) !== String(productId));
+    this.saveWishlist();
+  },
+
   isInWishlist(productId) {
-    return this.wishlist.some(item => item.id === productId);
+    return this.wishlist.some(item => String(item.id) === String(productId));
   }
 };
 

@@ -15,6 +15,21 @@ DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS coupons CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- ------------------------------------------------------------------------------
+-- 0. USERS TABLE (Authentication & Roles)
+-- ------------------------------------------------------------------------------
+CREATE TABLE users (
+    id VARCHAR(100) PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    salt VARCHAR(100) NOT NULL,
+    phone VARCHAR(50),
+    role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
 -- ------------------------------------------------------------------------------
 -- 1. CATEGORIES TABLE
@@ -165,18 +180,21 @@ ALTER TABLE coupons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Categories & Products: Public Read Access
 CREATE POLICY "Public read categories" ON categories FOR SELECT USING (true);
 CREATE POLICY "Public read products" ON products FOR SELECT USING (true);
 CREATE POLICY "Public read coupons" ON coupons FOR SELECT USING (true);
 CREATE POLICY "Public read reviews" ON reviews FOR SELECT USING (true);
+CREATE POLICY "Public read users" ON users FOR SELECT USING (true);
 
 -- Orders & Order Items: Anyone can insert orders
 CREATE POLICY "Public insert orders" ON orders FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public read own orders" ON orders FOR SELECT USING (true);
 CREATE POLICY "Public insert order items" ON order_items FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public read order items" ON order_items FOR SELECT USING (true);
+CREATE POLICY "Public insert users" ON users FOR INSERT WITH CHECK (true);
 
 -- Admin / Full Access: Allows service role or authenticated admin to perform all operations
 CREATE POLICY "Admin manage categories" ON categories FOR ALL USING (true) WITH CHECK (true);
@@ -184,4 +202,5 @@ CREATE POLICY "Admin manage products" ON products FOR ALL USING (true) WITH CHEC
 CREATE POLICY "Admin manage coupons" ON coupons FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Admin manage orders" ON orders FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Admin manage order items" ON order_items FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin manage users" ON users FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public insert reviews" ON reviews FOR INSERT WITH CHECK (true);
