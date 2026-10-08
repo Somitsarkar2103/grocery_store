@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshCart | Farm-Fresh Online Grocery & Fast Delivery</title>
+  <meta name="description" content="Order 100% organic produce, dairy, bakery, beverages, and pantry staples with 15-minute express delivery. Powered by Supabase PostgreSQL and Node.js.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2226%22>🛒</text></svg>">
+  
+  <!-- Google Fonts: Outfit (Display) & Plus Jakarta Sans (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <aside class="announcement-bar" id="announcementBar">
+    <div class="container announcement-content">
+      <span class="announcement-tag">Special Offer</span>
+      <p class="announcement-text">
+        Use coupon code <strong class="coupon-highlight" id="topCouponCode" title="Click to copy code">FRESH20</strong> for 20% OFF! Free express delivery on orders over $35 🚚
+      </p>
+      <div class="announcement-actions">
+        <span class="delivery-time-badge">⚡ 15-30 Min Delivery</span>
+        <button class="announcement-close" id="closeAnnouncement" aria-label="Dismiss banner">&times;</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sticky Main Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="container header-container">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="brand-logo" id="brandLogo">
+        <div class="logo-icon-wrapper">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Fresh<span>Cart</span></span>
+          <span class="brand-subtitle">Organic Groceries</span>
+        </div>
+      </a>
+
+      <!-- Location Selector -->
+      <button class="location-btn" id="locationBtn" title="Change delivery location">
+        <svg class="icon-location" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <div class="location-text">
+          <span class="location-label">Deliver to</span>
+          <span class="location-address" id="currentLocationText">New York, 10001</span>
+        </div>
+      </button>
+
+      <!-- Search Bar -->
+      <div class="search-wrapper">
+        <div class="search-category-select">
+          <select id="searchCategorySelect" aria-label="Select Category">
+            <option value="all">All Departments</option>
+            <!-- Categories populated via JS -->
+          </select>
+        </div>
+        <div class="search-input-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search 500+ fresh organic fruits, dairy, bakery..." autocomplete="off">
+          <button class="search-clear-btn" id="searchClearBtn" aria-label="Clear search" style="display: none;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Header Action Buttons -->
+      <div class="header-actions">
+        
+        <!-- Theme Toggle -->
+        <button class="icon-action-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+
+        <!-- Wishlist Button -->
+        <button class="icon-action-btn" id="wishlistBtn" title="Saved Items" aria-label="Wishlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </button>
+
+        <!-- Admin Portal Button -->
+        <button class="admin-portal-btn" id="adminPortalBtn" title="Open Admin Inventory & Orders Portal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Admin</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button class="cart-trigger-btn" id="cartTriggerBtn" aria-label="Open Cart">
+          <div class="cart-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="badge-count" id="cartBadgeCount">0</span>
+          </div>
+          <div class="cart-total-info">
+            <span class="cart-label">My Cart</span>
+            <span class="cart-amount" id="cartHeaderTotal">$0.00</span>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Promotional Section -->
+  <section class="hero-section" id="heroSection">
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span>100% Organic & Farm Fresh Guarantee</span>
+        </div>
+        <h1 class="hero-title">
+          Eat Clean & Fresh, Delivered to Your Door in <span class="highlight-gradient">15 Minutes</span>
+        </h1>
+        <p class="hero-subtitle">
+          Explore over 25+ hand-selected organic fruits, dairy items, freshly baked bread, cold-pressed juices, and premium cuts from certified local farms.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#storeSection" class="btn btn-primary btn-lg" id="shopNowBtn">
+            <span>Shop Groceries Now</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <button class="btn btn-outline btn-lg" id="exploreDealsBtn">
+            <span>Today's Hot Deals</span>
+            <span class="discount-pill">Up to 25% OFF</span>
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <strong>15 min</strong>
+            <span>Express Delivery</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>100%</strong>
+            <span>Organic Certified</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>$35+</strong>
+            <span>Free Delivery</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="hero-image-card">
+          <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80" alt="Fresh Organic Grocery Basket" class="hero-img">
+          <div class="hero-floating-card floating-card-1">
+            <div class="floating-icon">🥑</div>
+            <div>
+              <strong>Hass Avocados</strong>
+              <small>Freshly picked • $4.49</small>
+            </div>
+          </div>
+          <div class="hero-floating-card floating-card-2">
+            <div class="floating-icon">🚚</div>
+            <div>
+              <strong>Express Delivery</strong>
+              <small>Driver on the way • 12m away</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Trust Highlights -->
+  <section class="trust-features">
+    <div class="container trust-grid">
+      <div class="trust-card">
+        <div class="trust-icon-box">⚡</div>
+        <div>
+          <h4>15-Minute Dispatch</h4>
+          <p>Packed within 3 minutes of ordering from nearest hub.</p>
+        </div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon-box">🌱</div>
+        <div>
+          <h4>100% Certified Organic</h4>
+          <p>No synthetic pesticides, direct from certified farmers.</p>
+        </div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon-box">🏷️</div>
+        <div>
+          <h4>Farm-Direct Pricing</h4>
+          <p>Fair honest prices with weekly seasonal discount savings.</p>
+        </div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon-box">🛡️</div>
+        <div>
+          <h4>Freshness Guaranteed</h4>
+          <p>Not 100% satisfied? Get an instant no-questions refund.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section" id="categoriesSection">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Browse by Department</span>
+          <h2 class="section-title">Shop by Category</h2>
+        </div>
+        <button class="link-btn" id="viewAllCategoriesBtn">Reset Category Filter</button>
+      </div>
+
+      <!-- Categories Carousel / Grid -->
+      <div class="categories-grid" id="categoriesContainer">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Store Section (Filters + Products) -->
+  <section class="store-section" id="storeSection">
+    <div class="container store-layout">
+
+      <!-- Left Filter Sidebar -->
+      <aside class="filter-sidebar" id="filterSidebar">
+        <div class="filter-card">
+          <div class="filter-card-header">
+            <h3>Filters</h3>
+            <button class="reset-filter-btn" id="resetFiltersBtn">Reset All</button>
+          </div>
+
+          <!-- Category Filter list -->
+          <div class="filter-group">
+            <h4 class="filter-title">Categories</h4>
+            <div class="filter-category-list" id="filterCategoryList">
+              <!-- Dynamically generated -->
+            </div>
+          </div>
+
+          <!-- Price Range Slider -->
+          <div class="filter-group">
+            <div class="price-header">
+              <h4 class="filter-title">Max Price</h4>
+              <span class="price-value" id="priceDisplay">$20.00</span>
+            </div>
+            <input type="range" id="priceRange" min="1" max="25" step="0.5" value="25" class="range-slider">
+            <div class="price-range-labels">
+              <span>$1.00</span>
+              <span>$25.00</span>
+            </div>
+          </div>
+
+          <!-- Dietary & Stock Preferences -->
+          <div class="filter-group">
+            <h4 class="filter-title">Preferences</h4>
+            <label class="custom-checkbox">
+              <input type="checkbox" id="organicFilter">
+              <span class="checkbox-indicator"></span>
+              <span class="checkbox-label">🌱 Organic Only</span>
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" id="inStockFilter" checked>
+              <span class="checkbox-indicator"></span>
+              <span class="checkbox-label">📦 In Stock Only</span>
+            </label>
+          </div>
+
+          <!-- Quick Promo Card -->
+          <div class="sidebar-promo-box">
+            <div class="promo-box-badge">Save Extra</div>
+            <p>Apply <strong>FRESH20</strong> during checkout to take 20% off your entire basket.</p>
+            <button class="btn btn-sm btn-outline copy-coupon-btn" data-code="FRESH20">Copy FRESH20</button>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Main Product Grid Area -->
+      <main class="store-main">
+        
+        <!-- Store Controls Bar -->
+        <div class="store-controls-bar">
+          <div class="controls-info">
+            <h2 class="active-category-title" id="activeCategoryTitle">All Fresh Groceries</h2>
+            <span class="products-count-badge" id="productsCountBadge">Loading items...</span>
+          </div>
+          
+          <div class="controls-actions">
+            <!-- Sort dropdown -->
+            <div class="sort-select-wrapper">
+              <label for="sortSelect" class="sort-label">Sort By:</label>
+              <select id="sortSelect" class="sort-select">
+                <option value="featured">Featured & Popular</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest Arrivals</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Filter Tags Bar -->
+        <div class="active-tags-bar" id="activeTagsBar" style="display: none;">
+          <span class="tags-label">Active Filters:</span>
+          <div class="tags-list" id="tagsList"></div>
+          <button class="clear-tags-btn" id="clearTagsBtn">Clear All</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+          <!-- Dynamically populated via js -->
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Gathering fresh harvest...</p>
+          </div>
+        </div>
+
+        <!-- No Products Found State -->
+        <div class="empty-products-state" id="emptyProductsState" style="display: none;">
+          <div class="empty-icon">🥬</div>
+          <h3>No Groceries Found</h3>
+          <p>We couldn't find any products matching your selected filters or search terms.</p>
+          <button class="btn btn-primary" id="clearSearchFiltersBtn">Reset Filters</button>
+        </div>
+
+      </main>
+
+    </div>
+  </section>
+
+  <!-- Slide-Over Shopping Cart Drawer -->
+  <div class="drawer-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cart-drawer-icon">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <h3>Your Fresh Basket</h3>
+        <span class="drawer-items-count" id="drawerCartCount">(0 items)</span>
+      </div>
+      <button class="drawer-close-btn" id="closeCartDrawer" aria-label="Close cart">&times;</button>
+    </div>
+
+    <!-- Free Delivery Progress Bar -->
+    <div class="delivery-progress-container" id="deliveryProgressContainer">
+      <div class="delivery-progress-text" id="deliveryProgressText">
+        Add <strong>$35.00</strong> more to qualify for <strong>Free Delivery!</strong>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="deliveryProgressBar" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items Scroll Area -->
+    <div class="cart-items-list" id="cartItemsList">
+      <!-- Generated by JS -->
+    </div>
+
+    <!-- Empty Cart State -->
+    <div class="empty-cart-view" id="emptyCartView" style="display: none;">
+      <div class="empty-cart-icon">🛒</div>
+      <h4>Your basket is empty</h4>
+      <p>Explore our organic produce and artisan treats to get started.</p>
+      <button class="btn btn-primary" id="startShoppingBtn">Explore Groceries</button>
+    </div>
+
+    <!-- Cart Footer & Checkout -->
+    <div class="cart-footer" id="cartFooter">
+      
+      <!-- Promo Code Box -->
+      <div class="cart-coupon-box">
+        <div class="coupon-input-wrapper">
+          <input type="text" id="couponInput" placeholder="Enter promo code (e.g. FRESH20)" autocomplete="off">
+          <button class="btn btn-sm btn-dark" id="applyCouponBtn">Apply</button>
+        </div>
+        <div class="coupon-status" id="couponStatus"></div>
+      </div>
+
+      <!-- Bill Breakdown -->
+      <div class="cart-summary-table">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="summarySubtotal">$0.00</span>
+        </div>
+        <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
+          <span>Coupon Discount (<span id="discountCodeLabel"></span>)</span>
+          <span class="discount-val" id="summaryDiscount">-$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Fee</span>
+          <span id="summaryDeliveryFee">$4.99</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Sales Tax (5%)</span>
+          <span id="summaryTax">$0.00</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span class="summary-total-price" id="summaryTotal">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Checkout CTA Button -->
+      <button class="btn btn-primary btn-block btn-lg checkout-cta-btn" id="proceedToCheckoutBtn">
+        <span>Proceed to Checkout</span>
+        <span class="checkout-total-pill" id="checkoutBtnTotal">$0.00</span>
+      </button>
+
+      <div class="cart-guarantee-note">
+        <span>🔒 100% Secure Checkout • Express Dispatch</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div class="modal-backdrop" id="checkoutModalBackdrop">
+    <div class="modal-window checkout-modal" id="checkoutModal">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <h3>Complete Your Grocery Order</h3>
+          <p>Please enter your delivery and payment details.</p>
+        </div>
+        <button class="modal-close-btn" id="closeCheckoutModal">&times;</button>
+      </div>
+
+      <div class="checkout-modal-body">
+        <form id="checkoutForm">
+          
+          <div class="form-section">
+            <h4 class="form-section-title">1. Contact & Customer Information</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="custName">Full Name *</label>
+                <input type="text" id="custName" required placeholder="e.g. Sarah Jenkins">
+              </div>
+              <div class="form-group">
+                <label for="custEmail">Email Address *</label>
+                <input type="email" id="custEmail" required placeholder="sarah@example.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="custPhone">Phone Number *</label>
+                <input type="tel" id="custPhone" required placeholder="+1 (555) 000-0000">
+              </div>
+              <div class="form-group">
+                <label for="deliverySlot">Preferred Delivery Window</label>
+                <select id="deliverySlot">
+                  <option value="Express Dispatch (15-30 mins)">Express Dispatch (15-30 mins)</option>
+                  <option value="Today Evening (5:00 PM - 7:00 PM)">Today Evening (5:00 PM - 7:00 PM)</option>
+                  <option value="Tomorrow Morning (8:00 AM - 10:00 AM)">Tomorrow Morning (8:00 AM - 10:00 AM)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="form-section-title">2. Delivery Address</h4>
+            <div class="form-group">
+              <label for="custAddress">Street Address & Apartment/Suite *</label>
+              <input type="text" id="custAddress" required placeholder="e.g. 742 Evergreen Terrace, Apt 3B">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="custCity">City</label>
+                <input type="text" id="custCity" value="New York" required>
+              </div>
+              <div class="form-group">
+                <label for="custZip">Postal / ZIP Code</label>
+                <input type="text" id="custZip" value="10001" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="custNotes">Delivery Notes / Gate Code (Optional)</label>
+              <input type="text" id="custNotes" placeholder="e.g. Leave with doorman or ring buzzer #4">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="form-section-title">3. Payment Method</h4>
+            <div class="payment-options">
+              <label class="payment-radio-card active">
+                <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
+                <div class="payment-card-content">
+                  <span class="payment-icon">💵</span>
+                  <div>
+                    <strong>Cash on Delivery (COD)</strong>
+                    <small>Pay with cash or card upon delivery</small>
+                  </div>
+                </div>
+              </label>
+
+              <label class="payment-radio-card">
+                <input type="radio" name="paymentMethod" value="Credit / Debit Card">
+                <div class="payment-card-content">
+                  <span class="payment-icon">💳</span>
+                  <div>
+                    <strong>Credit / Debit Card</strong>
+                    <small>Visa, Mastercard, Amex, Apple Pay</small>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Checkout Final Review Box -->
+          <div class="checkout-review-summary">
+            <div class="review-row">
+              <span>Items Total (<span id="modalItemsCount">0</span> items):</span>
+              <span id="modalSubtotal">$0.00</span>
+            </div>
+            <div class="review-row discount-row" id="modalDiscountRow" style="display: none;">
+              <span>Discount:</span>
+              <span id="modalDiscount">-$0.00</span>
+            </div>
+            <div class="review-row">
+              <span>Delivery Fee:</span>
+              <span id="modalDelivery">$0.00</span>
+            </div>
+            <div class="review-row">
+              <span>Taxes (5%):</span>
+              <span id="modalTax">$0.00</span>
+            </div>
+            <div class="review-row review-grand-total">
+              <strong>Order Grand Total:</strong>
+              <strong id="modalTotal">$0.00</strong>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg place-order-btn" id="submitOrderBtn">
+            <span>Place Order Now</span>
+            <span class="btn-spinner" id="orderSpinner" style="display: none;"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Confirmation Success Modal -->
+  <div class="modal-backdrop" id="orderSuccessBackdrop">
+    <div class="modal-window success-modal" id="orderSuccessModal">
+      <div class="success-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="checkmark-icon">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+
+      <h2 class="success-title">Order Placed Successfully!</h2>
+      <p class="success-subtitle">
+        Thank you for ordering with FreshCart. Your groceries are being handpicked with love.
+      </p>
+
+      <div class="order-badge-box">
+        <span>Order Number:</span>
+        <strong id="successOrderNumber">ORD-894123</strong>
+      </div>
+
+      <!-- Real-time Delivery Progress Tracker -->
+      <div class="order-tracker-timeline">
+        <div class="timeline-step completed">
+          <div class="step-circle">✓</div>
+          <span class="step-title">Order Confirmed</span>
+          <span class="step-time">Just now</span>
+        </div>
+        <div class="timeline-line active"></div>
+        <div class="timeline-step active">
+          <div class="step-circle">2</div>
+          <span class="step-title">Packing Produce</span>
+          <span class="step-time">In Progress</span>
+        </div>
+        <div class="timeline-line"></div>
+        <div class="timeline-step">
+          <div class="step-circle">3</div>
+          <span class="step-title">Out for Delivery</span>
+          <span class="step-time">Est. 15 mins</span>
+        </div>
+        <div class="timeline-line"></div>
+        <div class="timeline-step">
+          <div class="step-circle">4</div>
+          <span class="step-title">Delivered</span>
+          <span class="step-time">Doorstep</span>
+        </div>
+      </div>
+
+      <div class="success-details-card">
+        <div class="details-row">
+          <span>Customer:</span>
+          <strong id="successCustomerName">-</strong>
+        </div>
+        <div class="details-row">
+          <span>Address:</span>
+          <span id="successAddress">-</span>
+        </div>
+        <div class="details-row">
+          <span>Delivery Window:</span>
+          <span id="successSlot">-</span>
+        </div>
+        <div class="details-row">
+          <span>Amount Paid/Due:</span>
+          <strong id="successTotal" class="text-primary">-</strong>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <button class="btn btn-primary btn-block" id="continueShoppingSuccessBtn">Continue Shopping</button>
+        <button class="btn btn-outline btn-block" id="printReceiptBtn">Print Receipt 📄</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Quick View Modal -->
+  <div class="modal-backdrop" id="quickViewBackdrop">
+    <div class="modal-window quick-view-modal" id="quickViewModal">
+      <button class="modal-close-btn" id="closeQuickViewModal">&times;</button>
+      <div class="quick-view-grid">
+        <div class="quick-view-image-box">
+          <img src="" alt="" id="qvImage">
+          <span class="qv-badge" id="qvBadge">Organic</span>
+        </div>
+        <div class="quick-view-info">
+          <span class="qv-category" id="qvCategory">Fresh Produce</span>
+          <h2 class="qv-title" id="qvTitle">Product Name</h2>
+          
+          <div class="qv-rating-row">
+            <span class="qv-stars" id="qvStars">★★★★★</span>
+            <span class="qv-rating-score" id="qvRating">4.9</span>
+            <span class="qv-review-count" id="qvReviewCount">(120 reviews)</span>
+          </div>
+
+          <div class="qv-price-row">
+            <span class="qv-price" id="qvPrice">$3.99</span>
+            <span class="qv-original-price" id="qvOriginalPrice">$4.99</span>
+            <span class="qv-unit" id="qvUnit">/ 1 kg</span>
+            <span class="qv-discount-pill" id="qvDiscountPill">20% OFF</span>
+          </div>
+
+          <p class="qv-description" id="qvDescription">Product description</p>
+
+          <!-- Nutrition Facts Grid -->
+          <div class="qv-nutrition-card" id="qvNutritionCard">
+            <div class="nutrition-title">Nutritional Facts</div>
+            <div class="nutrition-grid" id="qvNutritionGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="qv-stock-status in-stock" id="qvStockStatus">
+            <span>● In Stock (85 units available)</span>
+          </div>
+
+          <div class="qv-actions">
+            <div class="quantity-stepper">
+              <button class="stepper-btn" id="qvMinusBtn">−</button>
+              <span class="stepper-count" id="qvQuantity">1</span>
+              <button class="stepper-btn" id="qvPlusBtn">+</button>
+            </div>
+            <button class="btn btn-primary btn-lg qv-add-btn" id="qvAddToCartBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <span>Add to Basket</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Drawer / Modal -->
+  <div class="drawer-overlay" id="wishlistOverlay"></div>
+  <aside class="cart-drawer wishlist-drawer" id="wishlistDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <h3>Your Saved Wishlist</h3>
+        <span class="drawer-items-count" id="drawerWishlistCount">(0 items)</span>
+      </div>
+      <button class="drawer-close-btn" id="closeWishlistDrawer">&times;</button>
+    </div>
+    <div class="cart-items-list" id="wishlistItemsList">
+      <!-- Generated by JS -->
+    </div>
+    <div class="empty-cart-view" id="emptyWishlistView" style="display: none;">
+      <div class="empty-cart-icon">❤️</div>
+      <h4>Your wishlist is empty</h4>
+      <p>Click the heart icon on any grocery item to save it for later.</p>
+    </div>
+  </aside>
+
+  <!-- Admin Inventory & Orders Portal Modal -->
+  <div class="modal-backdrop" id="adminModalBackdrop">
+    <div class="modal-window admin-modal" id="adminModal">
+      <div class="modal-header">
+        <div class="admin-header-title">
+          <div class="admin-badge">Admin Portal</div>
+          <h2>Store Management Dashboard</h2>
+          <div class="supabase-status-pill" id="supabaseStatusPill">
+            <span class="status-dot"></span>
+            <span id="supabaseStatusText">Supabase PostgreSQL: Checking...</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeAdminModal">&times;</button>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="overview">📊 Overview & Stats</button>
+        <button class="admin-tab" data-tab="orders">📦 Manage Orders</button>
+        <button class="admin-tab" data-tab="products">🥬 Inventory & Products</button>
+        <button class="admin-tab" data-tab="addProduct">➕ Add New Product</button>
+      </div>
+
+      <div class="admin-modal-body">
+        
+        <!-- Tab 1: Overview & Stats -->
+        <div class="admin-tab-content active" id="tabOverview">
+          <div class="stats-cards-grid">
+            <div class="admin-stat-card">
+              <span class="stat-card-title">Total Revenue</span>
+              <strong class="stat-card-val text-primary" id="adminStatRevenue">$0.00</strong>
+              <small class="stat-card-sub">Processed through checkout</small>
+            </div>
+            <div class="admin-stat-card">
+              <span class="stat-card-title">Total Orders</span>
+              <strong class="stat-card-val" id="adminStatOrders">0</strong>
+              <small class="stat-card-sub">Customer orders received</small>
+            </div>
+            <div class="admin-stat-card">
+              <span class="stat-card-title">Active Products</span>
+              <strong class="stat-card-val" id="adminStatProducts">0</strong>
+              <small class="stat-card-sub">Live in store inventory</small>
+            </div>
+            <div class="admin-stat-card">
+              <span class="stat-card-title">Average Order Value</span>
+              <strong class="stat-card-val text-accent" id="adminStatAOV">$0.00</strong>
+              <small class="stat-card-sub">Basket average</small>
+            </div>
+          </div>
+
+          <div class="admin-section-block">
+            <h3>Recent Store Orders</h3>
+            <div class="table-responsive">
+              <table class="admin-table" id="recentOrdersTable">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTableBody">
+                  <!-- JS populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Orders Management -->
+        <div class="admin-tab-content" id="tabOrders">
+          <div class="orders-management-header">
+            <h3>Customer Orders Pipeline</h3>
+            <span class="info-tag">Real-time status updates</span>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table" id="allOrdersTable">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer Info</th>
+                  <th>Items & Total</th>
+                  <th>Current Status</th>
+                  <th>Update Status</th>
+                </tr>
+              </thead>
+              <tbody id="allOrdersTableBody">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Products Catalog Management -->
+        <div class="admin-tab-content" id="tabProducts">
+          <div class="catalog-management-header">
+            <h3>Active Grocery Catalog</h3>
+            <span class="info-tag" id="catalogCountTag">0 products</span>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table" id="catalogTable">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catalogTableBody">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 4: Add New Product -->
+        <div class="admin-tab-content" id="tabAddProduct">
+          <form id="addProductForm" class="add-product-form">
+            <h3>Add New Grocery Item</h3>
+            <p>New items are instantly added to your Supabase PostgreSQL database!</p>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newProdName">Product Name *</label>
+                <input type="text" id="newProdName" required placeholder="e.g. Organic Blueberries">
+              </div>
+              <div class="form-group">
+                <label for="newProdCategory">Department / Category *</label>
+                <select id="newProdCategory" required>
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newProdPrice">Price ($) *</label>
+                <input type="number" id="newProdPrice" step="0.01" min="0.1" required placeholder="4.99">
+              </div>
+              <div class="form-group">
+                <label for="newProdOriginalPrice">Original Price ($)</label>
+                <input type="number" id="newProdOriginalPrice" step="0.01" min="0.1" placeholder="5.99">
+              </div>
+              <div class="form-group">
+                <label for="newProdUnit">Unit / Packaging *</label>
+                <input type="text" id="newProdUnit" required placeholder="e.g. 500g pack, 1 kg">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newProdStock">Initial Stock Qty *</label>
+                <input type="number" id="newProdStock" min="1" value="50" required>
+              </div>
+              <div class="form-group">
+                <label for="newProdImage">Product Image URL *</label>
+                <input type="url" id="newProdImage" required placeholder="https://images.unsplash.com/...">
+              </div>
+              <div class="form-group">
+                <label for="newProdBadge">Highlight Badge</label>
+                <input type="text" id="newProdBadge" placeholder="e.g. Organic, Fresh, Special">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="newProdDescription">Description *</label>
+              <textarea id="newProdDescription" rows="3" required placeholder="Rich natural flavors, source, nutritional benefits..."></textarea>
+            </div>
+
+            <div class="form-row checkbox-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="newProdOrganic" checked>
+                <span class="checkbox-indicator"></span>
+                <span>Certified Organic</span>
+              </label>
+              <label class="custom-checkbox">
+                <input type="checkbox" id="newProdFeatured" checked>
+                <span class="checkbox-indicator"></span>
+                <span>Feature on Homepage</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" id="saveProductBtn">
+              <span>Save & Publish Product</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Picker Modal -->
+  <div class="modal-backdrop" id="locationModalBackdrop">
+    <div class="modal-window location-modal" id="locationModal">
+      <div class="modal-header">
+        <h3>Choose Delivery Location</h3>
+        <button class="modal-close-btn" id="closeLocationModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Select your delivery zone for fast 15-minute dispatch:</p>
+        <div class="location-presets">
+          <button class="location-preset-btn active" data-loc="New York, 10001">📍 Manhattan, NY (10001)</button>
+          <button class="location-preset-btn" data-loc="Brooklyn, 11201">📍 Brooklyn, NY (11201)</button>
+          <button class="location-preset-btn" data-loc="Queens, 11101">📍 Queens, NY (11101)</button>
+          <button class="location-preset-btn" data-loc="Jersey City, 07302">📍 Jersey City, NJ (07302)</button>
+        </div>
+        <div class="form-group mt-3">
+          <label for="customZipInput">Or enter your Postal / ZIP Code:</label>
+          <div class="inline-input-group">
+            <input type="text" id="customZipInput" placeholder="e.g. 90210">
+            <button class="btn btn-primary" id="saveCustomZipBtn">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Modern Footer -->
+  <footer class="main-footer">
+    <div class="container footer-container">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <div class="brand-logo footer-logo">
+            <div class="logo-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <span class="brand-name">Fresh<span>Cart</span></span>
+          </div>
+          <p class="footer-desc">
+            Your neighborhood farm-to-table digital grocer. Delivering pristine organic produce, artisan bakery, dairy, and wild catch within 15 minutes.
+          </p>
+          <div class="tech-stack-badges">
+            <span class="tech-pill">⚡ Supabase PostgreSQL</span>
+            <span class="tech-pill">🌿 Node.js & Express</span>
+            <span class="tech-pill">✨ Modern CSS</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-title">Departments</h4>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-cat-link" data-cat="fruits-vegetables">Fresh Fruits & Veg</a></li>
+            <li><a href="#" class="footer-cat-link" data-cat="dairy-eggs">Dairy & Pasture Eggs</a></li>
+            <li><a href="#" class="footer-cat-link" data-cat="bakery-snacks">Artisan Bakery & Breads</a></li>
+            <li><a href="#" class="footer-cat-link" data-cat="beverages">Cold-Pressed Juices</a></li>
+            <li><a href="#" class="footer-cat-link" data-cat="organic-pantry">Organic Pantry Staples</a></li>
+            <li><a href="#" class="footer-cat-link" data-cat="meat-seafood">Meat & Wild Salmon</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-title">Help & Service</h4>
+          <ul class="footer-links">
+            <li><a href="#storeSection">Delivery Areas & Slots</a></li>
+            <li><a href="#storeSection">100% Quality Guarantee</a></li>
+            <li><a href="#storeSection">Track Current Order</a></li>
+            <li><a href="#" id="footerAdminTrigger">Store Admin Panel</a></li>
+            <li><a href="#">FAQ & Customer Support</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col newsletter-col">
+          <h4 class="footer-title">Fresh Updates</h4>
+          <p>Subscribe for weekly farm harvests and 20% off voucher codes.</p>
+          <div class="newsletter-form">
+            <input type="email" placeholder="Enter your email" id="newsletterInput">
+            <button class="btn btn-primary" id="newsletterBtn">Join</button>
+          </div>
+          <div class="payment-badges-row">
+            <span>Visa</span>
+            <span>Mastercard</span>
+            <span>Apple Pay</span>
+            <span>COD</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 FreshCart Inc. All rights reserved. Powered by Supabase PostgreSQL & Node.js Express.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
