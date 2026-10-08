@@ -73,14 +73,19 @@ const getProducts = async (req, res) => {
 
         const { data, error, count } = await query;
 
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
+          const mapped = data.map(p => ({
+            ...p,
+            category_name: p.category_name || (p.categories ? p.categories.name : undefined),
+            category_slug: p.category_slug || (p.categories ? p.categories.slug : undefined)
+          }));
           return res.json({
             success: true,
             source: 'supabase-postgresql',
-            total: count || data.length,
+            total: count !== null && count !== undefined ? count : mapped.length,
             page: parseInt(page),
             limit: parseInt(limit),
-            data
+            data: mapped
           });
         }
       } catch (err) {

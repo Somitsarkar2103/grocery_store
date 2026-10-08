@@ -13,34 +13,43 @@ document.addEventListener('DOMContentLoaded', () => {
     categories: [],
 
     async init() {
-      UI.initTheme();
-      CartState.subscribe(calc => UI.updateCartDrawer(calc));
-      CartState.subscribeWishlist(wishlist => {
-        UI.updateWishlistDrawer(wishlist);
-        UI.syncWishlistButtons(wishlist);
-      });
-      Admin.init();
+      try {
+        UI.initTheme();
+        CartState.subscribe(calc => UI.updateCartDrawer(calc));
+        CartState.subscribeWishlist(wishlist => {
+          UI.updateWishlistDrawer(wishlist);
+          UI.syncWishlistButtons(wishlist);
+        });
 
-      // Role and Auth UI Setup
-      if (typeof Auth !== 'undefined') {
-        Auth.renderHeader('headerAuthContainer');
-        const adminBtn = document.getElementById('adminPortalBtn');
-        if (adminBtn) {
-          // Strict Role Separation: Normal customers cannot access admin portal!
-          if (Auth.isAuthenticated() && !Auth.isAdmin()) {
-            adminBtn.style.display = 'none';
+        if (typeof Admin !== 'undefined' && Admin.init) {
+          Admin.init();
+        } else if (typeof AdminDashboard !== 'undefined' && AdminDashboard.init) {
+          AdminDashboard.init();
+        }
+
+        // Role and Auth UI Setup
+        if (typeof Auth !== 'undefined') {
+          Auth.renderHeader('headerAuthContainer');
+          const adminBtn = document.getElementById('adminPortalBtn');
+          if (adminBtn) {
+            // Strict Role Separation: Normal customers cannot access admin portal!
+            if (Auth.isAuthenticated() && !Auth.isAdmin()) {
+              adminBtn.style.display = 'none';
+            }
           }
         }
-      }
 
-      this.bindHeaderActions();
-      this.bindFilterActions();
-      this.bindCartActions();
-      this.bindCheckoutActions();
-      this.bindQuickViewActions();
-      this.bindWishlistActions();
-      this.bindLocationActions();
-      this.bindCustomerAccountActions();
+        this.bindHeaderActions();
+        this.bindFilterActions();
+        this.bindCartActions();
+        this.bindCheckoutActions();
+        this.bindQuickViewActions();
+        this.bindWishlistActions();
+        this.bindLocationActions();
+        this.bindCustomerAccountActions();
+      } catch (initErr) {
+        console.warn('Non-fatal initialization warning:', initErr);
+      }
 
       await this.loadCategories();
       await this.loadProducts();
@@ -101,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async loadProducts() {
       const grid = document.getElementById('productsGrid');
+      const emptyState = document.getElementById('emptyProductsState');
+      const countBadge = document.getElementById('productsCountBadge');
+
       if (grid) {
         grid.innerHTML = `
           <div class="loading-state">
@@ -108,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>Fetching fresh groceries from Supabase...</p>
           </div>
         `;
+      }
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      if (countBadge) {
+        countBadge.textContent = 'Loading items...';
       }
 
       try {
@@ -122,12 +140,23 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const res = await API.getProducts(params);
-        this.allProducts = res.data || [];
+        let products = [];
+        if (Array.isArray(res)) {
+          products = res;
+        } else if (res && Array.isArray(res.data)) {
+          products = res.data;
+        } else if (res && Array.isArray(res.products)) {
+          products = res.products;
+        }
+        this.allProducts = products;
 
         // Update count badge & title
-        const countBadge = document.getElementById('productsCountBadge');
         if (countBadge) {
-          countBadge.textContent = `Showing ${this.allProducts.length} items`;
+          if (this.allProducts.length === 0) {
+            countBadge.textContent = 'No products found';
+          } else {
+            countBadge.textContent = `Showing ${this.allProducts.length} items`;
+          }
         }
 
         const titleEl = document.getElementById('activeCategoryTitle');
@@ -149,15 +178,25 @@ document.addEventListener('DOMContentLoaded', () => {
         this.updateActiveTags();
       } catch (err) {
         console.error('Failed to load products:', err);
+        if (countBadge) {
+          countBadge.textContent = 'Unable to load products';
+        }
+        if (emptyState) {
+          emptyState.style.display = 'none';
+        }
         if (grid) {
           grid.innerHTML = `
             <div class="empty-products-state" style="display: block;">
               <div class="empty-icon">⚠️</div>
-              <h3>Unable to load groceries</h3>
-              <p>${err.message}</p>
-              <button class="btn btn-primary" onclick="location.reload()">Retry</button>
+              <h3>Unable to load products</h3>
+              <p>Unable to load products. Please try again.</p>
+              <button class="btn btn-primary" id="retryLoadProductsBtn">Retry</button>
             </div>
           `;
+          const retryBtn = document.getElementById('retryLoadProductsBtn');
+          if (retryBtn) {
+            retryBtn.addEventListener('click', () => this.loadProducts());
+          }
         }
       }
     },
@@ -417,6 +456,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. PRODUCT CARD INTERACTIONS
     // --------------------------------------------------------------------------
     bindProductCardEvents(container) {
+      if (container._hasCardEvents) return;
+      container._hasCardEvents = true;
+
       container.addEventListener('click', (e) => {
         const card = e.target.closest('.product-card');
         if (!card) return;
@@ -578,11 +620,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       this.openCheckoutModal = (calc) => {
-        document.getElementById('modalItemsCount').textContent = calc.itemCount;
-        document.getElementById('modalSubtotal').textContent = UI.formatPrice(calc.subtotal);
-        document.getElementById('modalDelivery').textContent = calc.deliveryFee === 0 ? 'FREE' : UI.formatPrice(calc.deliveryFee);
-        document.getElementById('modalTax').textContent = UI.formatPrice(calc.tax);
-        document.getElementById('modalTotal').textContent = UI.formatPrice(calc.total);
+        const modalItems = document.getElementById('modalItemsCount');
+        const modalSub = document.getElementById('modalSubtotal');
+        const modalDel = document.getElementById('modalDelivery');
+        const modalTax = document.getElementById('modalTax');
+        const modalTot = document.getElementById('modalTotal');
+        const discountRow = document.getElementById('modalDiscountRow');
+        const discountEl = document.getElementById('modalDiscount');
+
+        if (modalItems) modalItems.textContent = calc.itemCount;
+        if (modalSub) modalSub.textContent = UI.formatPrice(calc.subtotal);
+        if (modalDel) modalDel.textContent = calc.deliveryFee === 0 ? 'FREE' : UI.formatPrice(calc.deliveryFee);
+        if (modalTax) modalTax.textContent = UI.formatPrice(calc.tax);
+        if (modalTot) modalTot.textContent = UI.formatPrice(calc.total);
 
         if (discountRow) {
           if (calc.discount > 0) {

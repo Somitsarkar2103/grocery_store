@@ -69,17 +69,21 @@ const UI = {
     card.dataset.id = product.id;
 
     const isFav = CartState.isInWishlist(product.id);
+    const isOrganic = Boolean(product.is_organic || product.organic);
     const discountBadge = product.discount_percent > 0 
       ? `<span class="product-badge-pill discount">${product.discount_percent}% OFF</span>` 
-      : (product.is_organic ? `<span class="product-badge-pill organic">Organic</span>` : '');
+      : (isOrganic ? `<span class="product-badge-pill organic">Organic</span>` : '');
 
     const badgeHTML = product.badge 
       ? `<span class="product-badge-pill ${product.badge.toLowerCase() === 'organic' ? 'organic' : ''}">${product.badge}</span>`
       : discountBadge;
 
+    const imageUrl = product.image_url || product.image || '';
+    const categoryName = product.category_name || (product.categories && product.categories.name) || product.category || 'Grocery';
+
     card.innerHTML = `
       <div class="product-image-wrap" data-action="quickview">
-        <img src="${product.image_url}" alt="${product.name}" class="product-img" loading="lazy">
+        <img src="${imageUrl}" alt="${product.name}" class="product-img" loading="lazy">
         ${badgeHTML}
         <button class="wishlist-toggle-btn ${isFav ? 'active' : ''}" data-action="wishlist" title="${isFav ? 'Remove from wishlist' : 'Save to wishlist'}">
           <svg viewBox="0 0 24 24" fill="${isFav ? '#ef4444' : 'none'}" stroke="currentColor" stroke-width="2">
@@ -89,7 +93,7 @@ const UI = {
       </div>
 
       <div class="product-info">
-        <span class="product-category-name">${product.category_name || 'Grocery'}</span>
+        <span class="product-category-name">${categoryName}</span>
         <h3 class="product-title" data-action="quickview" title="${product.name}">${product.name}</h3>
         <span class="product-unit-text">${product.unit || '1 unit'}</span>
 

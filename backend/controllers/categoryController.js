@@ -12,7 +12,7 @@ const getCategories = async (req, res) => {
           .select('*')
           .order('name', { ascending: true });
 
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
           return res.json({
             success: true,
             source: 'supabase-postgresql',

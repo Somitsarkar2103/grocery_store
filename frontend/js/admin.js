@@ -10,10 +10,15 @@ const AdminDashboard = {
   users: [],
   offers: [],
   categories: [],
+  _initialized: false,
 
   init() {
-    // 1. Role-Based Access Control Guard
-    if (window.location.pathname.includes('/admin') || window.location.pathname.endsWith('admin.html')) {
+    if (this._initialized) return;
+    this._initialized = true;
+
+    // 1. Role-Based Access Control Guard for Admin page
+    const isAdminRoute = window.location.pathname.includes('/admin') || window.location.pathname.endsWith('admin.html');
+    if (isAdminRoute) {
       if (typeof Auth !== 'undefined') {
         const allowed = Auth.requireAdminGuard();
         if (!allowed) return;
@@ -29,11 +34,41 @@ const AdminDashboard = {
           }
         }
       }
+
+      this.bindEvents();
+      this.checkDatabaseConnection();
+      this.refreshAllData();
+    } else {
+      // Store pages: only bind admin navigation triggers if present
+      this.bindStoreAdminTriggers();
+    }
+  },
+
+  bindStoreAdminTriggers() {
+    const adminPortalBtn = document.getElementById('adminPortalBtn');
+    if (adminPortalBtn && !adminPortalBtn._bound) {
+      adminPortalBtn._bound = true;
+      adminPortalBtn.addEventListener('click', () => {
+        if (typeof Auth !== 'undefined' && Auth.isAdmin()) {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/admin-login';
+        }
+      });
     }
 
-    this.bindEvents();
-    this.checkDatabaseConnection();
-    this.refreshAllData();
+    const footerAdminTrigger = document.getElementById('footerAdminTrigger');
+    if (footerAdminTrigger && !footerAdminTrigger._bound) {
+      footerAdminTrigger._bound = true;
+      footerAdminTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof Auth !== 'undefined' && Auth.isAdmin()) {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/admin-login';
+        }
+      });
+    }
   },
 
   bindEvents() {
@@ -732,7 +767,15 @@ const AdminDashboard = {
   }
 };
 
+const Admin = AdminDashboard;
+
+if (typeof window !== 'undefined') {
+  window.Admin = AdminDashboard;
+  window.AdminDashboard = AdminDashboard;
+}
+
 // Initialize Admin Dashboard
 document.addEventListener('DOMContentLoaded', () => {
   AdminDashboard.init();
 });
+

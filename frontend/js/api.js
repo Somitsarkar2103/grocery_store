@@ -3,7 +3,22 @@
  * Wraps backend endpoints for Products, Categories, Orders, Coupons, Auth, and Admin Stats.
  */
 const API = {
-  baseUrl: '/api',
+  baseUrl: (function() {
+    if (typeof window !== 'undefined') {
+      if (window.__API_BASE_URL__) return window.__API_BASE_URL__;
+      try {
+        const stored = localStorage.getItem('freshcart_api_url');
+        if (stored) return stored;
+      } catch (e) {}
+      // If frontend is accessed from a different origin/port (e.g. Vite :5173, LiveServer :5500, or file://)
+      if (window.location) {
+        if (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '5000')) {
+          return 'http://localhost:5000/api';
+        }
+      }
+    }
+    return '/api';
+  })(),
 
   getToken() {
     try {
@@ -28,10 +43,15 @@ const API = {
 
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, config);
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error(`Invalid response from server (${response.status} ${response.statusText})`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        throw new Error((data && data.error) || `HTTP error! status: ${response.status}`);
       }
 
       return data;
@@ -191,3 +211,8 @@ const API = {
     return this.request('/stats');
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.API = API;
+}
+
